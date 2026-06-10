@@ -1,0 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  DOCTOR
+  PATIENT
+}
+
+enum RiskLevel {
+  BAJO
+  MEDIO
+  ALTO
+  CRITICO
+}
+
+enum TipoPie {
+  DERECHO
+  IZQUIERDO
+}
+
+enum Sexo {
+  MASCULINO
+  FEMENINO
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  role        Role
+  nombre      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  patient     Patient?
+  evaluations Evaluation[] @relation("DoctorEvaluations")
+
+  @@map("users")
+}
+
+model Patient {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  nombre          String
+  fechaNacimiento DateTime
+  edad            Int
+  sexo            Sexo
+  domicilio       String
+  telefono        String
+  estadoCivil     String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  questionnaire MedicalQuestionnaire?
+  evaluations   Evaluation[]
+
+  @@map("patients")
+}
+
+model MedicalQuestionnaire {
+  id        String  @id @default(cuid())
+  patientId String  @unique
+  patient   Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  diagnosticoPrevio      Boolean @default(false)
+  tipoDiabetes           String?
+  anosEvolucion          Int?
+
+  antecedentesFamiliares Boolean @default(false)
+  planAlimentacion       Boolean @default(false)
+  usoInsulina            Boolean @default(false)
+  trabajoPesado          Boolean @default(false)
+
+  ulceraEnPie          Boolean @default(false)
+  frecuenciaCorteUnas  Int?
+  cambiosTemperatura   Boolean @default(false)
+
+  frecuenciaEjercicio String?
+  tipoCalzado         String?
+
+  perdidaSensibilidad Boolean @default(false)
+  amputaciones        Boolean @default(false)
+  infeccionesPies     Boolean @default(false)
+  lesionesLentas      Boolean @default(false)
+
+  enfermedadesVasculares    Boolean @default(false)
+  hipertension              Boolean @default(false)
+  dislipidemia              Boolean @default(false)
+  obesidad                  Boolean @default(false)
+  otrasEnfermedades         String?
+
+  ulcerasAnteriores         Boolean @default(false)
+  deformidadesPies          Boolean @default(false)
+  factoresRiesgoAdicionales String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("medical_questionnaires")
+}
+
+model Evaluation {
+  id            String     @id @default(cuid())
+  patientId     String
+  patient       Patient    @relation(fields: [patientId], references: [id])
+  doctorId      String
+  doctor        User       @relation("DoctorEvaluations", fields: [doctorId], references: [id])
+  fecha         DateTime   @default(now())
+  observaciones String?    @db.Text
+  riesgo        RiskLevel?
+  probabilidad  Float?
+  recomendaciones String?  @db.Text
+  hallazgos     String?    @db.Text
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  thermalImages ThermalImage[]
+
+  @@map("evaluations")
+}
+
+model ThermalImage {
+  id           String     @id @default(cuid())
+  evaluationId String
+  evaluation   Evaluation @relation(fields: [evaluationId], references: [id], onDelete: Cascade)
+  tipoPie      TipoPie
+  rutaImagen   String
+  createdAt    DateTime   @default(now())
+
+  @@map("thermal_images")
+}
