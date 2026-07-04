@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "concurrently --kill-others --names \"nuxt,python\" --prefix-colors \"cyan,yellow\" \"nuxt dev\" \"node python-service/start.mjs\"",
+    "dev:nuxt": "nuxt dev",
+    "dev:python": "node python-service/start.mjs",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -31,6 +33,7 @@
   "devDependencies": {
     "@nuxt/devtools": "latest",
     "@types/bcryptjs": "^2.4.6",
+    "concurrently": "^10.0.3",
     "prisma": "^6.0.0",
     "tsx": "^4.15.4",
     "typescript": "^5.5.3"
