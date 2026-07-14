@@ -10,7 +10,7 @@
     "dev:python": "node python-service/start.mjs",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "prisma generate && nuxt prepare",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:seed": "npx tsx prisma/seed.ts",
