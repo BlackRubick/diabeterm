@@ -2,7 +2,7 @@ import { prisma } from '../utils/prisma'
 import type { Prisma } from '@prisma/client'
 
 const evaluationInclude = {
-  patient: { select: { id: true, nombre: true } },
+  patient: { select: { id: true, nombre: true, edad: true, sexo: true } },
   doctor: { select: { id: true, nombre: true } },
   thermalImages: true,
 } satisfies Prisma.EvaluationInclude

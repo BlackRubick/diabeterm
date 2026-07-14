@@ -27,7 +27,7 @@ export interface Evaluation {
   recomendaciones?: string
   hallazgos?: string
   doctor?: { nombre: string; id: string }
-  patient?: { nombre: string; id: string }
+  patient?: { nombre: string; id: string; edad?: number; sexo?: 'MASCULINO' | 'FEMENINO' }
   thermalImages?: ThermalImage[]
   createdAt: string
 }

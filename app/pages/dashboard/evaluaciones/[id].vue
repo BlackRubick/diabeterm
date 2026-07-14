@@ -15,7 +15,8 @@ function formatDate(date: string) {
   })
 }
 
-function printPage() { window.print() }
+const router = useRouter()
+function openReport() { router.push(`/dashboard/evaluaciones/${id}/reporte`) }
 </script>
 
 <template>
@@ -115,10 +116,10 @@ function printPage() { window.print() }
         <button
           class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200"
           style="background: var(--surface-1); border: 1px solid var(--surface-border); color: var(--text-2)"
-          @click="printPage"
+          @click="openReport"
         >
           <UIcon name="i-heroicons-printer" class="text-base" />
-          Imprimir / PDF
+          Ver reporte / PDF
         </button>
       </div>
     </template>
