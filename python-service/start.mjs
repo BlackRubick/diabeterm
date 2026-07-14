@@ -25,7 +25,9 @@ function findSystemPython() {
 
 function run(cmd, args) {
   return new Promise((resolve, reject) => {
-    const proc = spawn(cmd, args, { stdio: 'inherit', shell: isWindows })
+    // En Windows con shell:true el ejecutable debe ir entre comillas si la ruta tiene espacios
+    const safeCmd = isWindows ? `"${cmd}"` : cmd
+    const proc = spawn(safeCmd, args, { stdio: 'inherit', shell: isWindows })
     proc.on('close', code =>
       code === 0 ? resolve() : reject(new Error(`Proceso terminó con código ${code}`))
     )
@@ -45,12 +47,14 @@ async function main() {
     execSync(`"${PYTHON_BIN}" -c "import fastapi, cv2, easyocr"`, { stdio: 'ignore' })
   } catch {
     console.log('[Python] Instalando dependencias...')
-    await run(PIP_BIN, ['install', '-q', '-r', join(__dirname, 'requirements.txt')])
+    const reqPath = join(__dirname, 'requirements.txt')
+    await run(PIP_BIN, ['install', '-q', '-r', isWindows ? `"${reqPath}"` : reqPath])
   }
 
   // 3. Iniciar el servicio FastAPI
   console.log('[Python] Servicio de análisis térmico en http://localhost:8000')
-  await run(PYTHON_BIN, [join(__dirname, 'main.py')])
+  const mainPath = join(__dirname, 'main.py')
+  await run(PYTHON_BIN, [isWindows ? `"${mainPath}"` : mainPath])
 }
 
 main().catch(err => {
